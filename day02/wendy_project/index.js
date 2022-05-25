@@ -5,7 +5,7 @@ const express = require('express')
 const app = express()
 
 //监听端口服务
-app.listen(8084, () => {
+app.listen(80, () => {
     console.log("----service start")
 })
 //use plugin for static source
@@ -41,18 +41,22 @@ const schema = new mongoose.Schema({
     remark: String
 })
 // model方法执行以后会得到一个数据模型实例(Model对象)
-const UserModel = mongoose.model('UserModel', schema, 'user_info')
+const user = mongoose.model('user', schema, 'user_info')
+user.find(function (err, result) {
+    console.log(result)
+})
 
 //开发接口
 app.get('/user/list', (req, res) => {
     //调用接口获取数据
     //// find(callback?: mongoose.Callback<any[]>)
     // Callback(error: NativeError, result: any[])
-    UserModel.find((err, result) => {
+    user.find((err, result) => {
+
         if (err) {
             //第一个应该是错误信息 -> 如果出现查询错误，那么就应该由提示数据对象；没有则返回一个null给我们
             // 第二个是查询结果,但都返回一个错误信息，否则容易被人查询到数据结构（安全）。
-            res.send({ code: 50, message: 'server error' })
+            res.send({ code: 500, message: 'server error' })
         }
         else {
             res.send({ code: 200, message: 'success', data: result })
